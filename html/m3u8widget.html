@@ -1,0 +1,47 @@
+<html>
+
+  <head>
+    <title>GPW 2021 - live stream</title>
+  </head>
+
+  <body>
+      <script src="js/hls.js"></script>
+
+      <center>
+          <video height="240" id="video" controls></video>
+      </center>
+
+      <script>
+        const URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        const video = document.getElementById('video');
+        video.height = document.body.clientHeight;
+
+        document.body.onresize = function() {
+          video.height = document.body.clientHeight;
+          console.log("Resized to", document.body.clientHeight );
+        };
+
+        if(Hls.isSupported()) {
+          const hls = new Hls({
+              debug: true
+          });
+          hls.loadSource(URL);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+            video.muted = true;
+            video.play();
+        });
+       }
+       // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+       // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element throught the `src` property.
+       // This is using the built-in support of the plain video element, without using hls.js.
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = URL;
+          video.addEventListener('canplay',function() {
+            video.play();
+          });
+        }
+      </script>
+
+  </body>
+</html>
